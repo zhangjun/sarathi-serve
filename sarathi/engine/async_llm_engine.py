@@ -256,6 +256,7 @@ class AsyncLLMEngine(LLMEngine):
 
         # Lazy initialized fields
         self._request_tracker: RequestTracker
+        self.get_redis_data_event = asyncio.Event()
 
     @classmethod
     def from_system_config(
@@ -368,6 +369,7 @@ class AsyncLLMEngine(LLMEngine):
                 logger.error("Engine iteration timed out. This should never happen!")
                 self.set_errored(exc)
                 raise
+            self.get_redis_data_event.set()
             await asyncio.sleep(0)
 
     async def get_model_config(self) -> ModelConfig:
